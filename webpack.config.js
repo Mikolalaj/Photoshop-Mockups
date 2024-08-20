@@ -40,7 +40,7 @@ module.exports = {
         os: 'commonjs2 os',
     },
     output: {
-        filename: 'index.js',
+        filename: 'Mockupy.jsx',
         path: path.resolve(__dirname, 'dist'),
     },
     optimization: {
