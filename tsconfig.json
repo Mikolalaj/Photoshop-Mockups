@@ -5,6 +5,7 @@
         "noLib": true,
         "target": "ES5",
         "allowJs": true,
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "types": ["node"],
     }
 }
