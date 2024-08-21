@@ -355,7 +355,7 @@ export function getMockupLayer(mockupType: MockupType, subType: string, psDoc: D
     }
 }
 
-export function getScale(mockupName: MockupType, patternWidthCm: number, patternWidthPx: number): number {
+export function calcScale(mockupName: MockupType, patternWidthCm: number, patternWidthPx: number): number {
     const pillow = (3008 / ((patternWidthPx / patternWidthCm) * 40)) * 100
     const scales = {
         [MockupType.Pillow]: pillow,

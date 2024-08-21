@@ -1,6 +1,7 @@
-import { getMockupLayer, getScale, MockupType, properties } from './properties'
+import { getMockupLayer, calcScale, MockupType, properties } from './properties'
 import { getSettings, showDialog } from './dialog'
 import { resizeAndSaveImage } from './resize'
+import { definePattern, getScale, makePatternFillLayer, movePattern } from './patterns'
 
 const psApp = app
 
@@ -28,7 +29,7 @@ function openMockup(mockupsFolder: string, mockupName: string, subType: string) 
             break // Exit the loop once the element is found
         }
     }
-    psApp.open(new File(mockupsFolder + "/" + mockupPath))
+    psApp.open(new File(mockupsFolder + '/' + mockupPath))
 }
 
 function updateMockup(mockupName: MockupType, patternName: string, scale: number, subType: string) {
@@ -46,7 +47,7 @@ function updateMockup(mockupName: MockupType, patternName: string, scale: number
             var smartDoc = psApp.activeDocument
             smartDoc.activeLayer = smartDoc.layers[0]
 
-            makePatternFillLayer(patternName, scale, mockupName, subType)
+            makePatternFillLayer(patternName, getScale(scale, mockupName, subType))
 
             if (mockupLayers[i]['transform']) {
                 // Move the pattern to the correct position
@@ -94,69 +95,12 @@ function exportMockup(outputFolder: string, mockupName: string, imageName: strin
         }
     }
 
-    const filePath = outputFolder + "/" + prefix + imageName
+    const filePath = outputFolder + '/' + prefix + imageName
     const jpgFile = new File(filePath)
     const psDoc = psApp.activeDocument
     psDoc.saveAs(jpgFile, jpgOptions, true, Extension.LOWERCASE)
 
     resizeAndSaveImage(filePath, [1500, 1250])
-}
-
-function makePatternFillLayer(patternName: string, scale: number, mockupName: string, subType: string) {
-    var scaleMultiplier = 1
-    var mockupProperties = properties[mockupName]
-    for (var i = 0; i < mockupProperties.length; i++) {
-        if (mockupProperties[i]['name'] === subType) {
-            scaleMultiplier = mockupProperties[i]['scaleMultiplier']
-            break // Exit the loop once the element is found
-        }
-    }
-    var s2t = function (s: string) {
-        return app.stringIDToTypeID(s)
-    }
-    var scaleDesc = new ActionDescriptor()
-    scaleDesc.putUnitDouble(app.charIDToTypeID('Scl '), app.charIDToTypeID('#Prc'), scale * scaleMultiplier)
-
-    var reference = new ActionReference()
-    reference.putClass(s2t('contentLayer'))
-
-    var nullDesc = new ActionDescriptor()
-    nullDesc.putReference(s2t('null'), reference)
-
-    var nameDesc = new ActionDescriptor()
-    nameDesc.putString(s2t('name'), patternName)
-
-    // var patternDesc = new ActionDescriptor()
-    scaleDesc.putObject(s2t('pattern'), s2t('pattern'), nameDesc)
-
-    var typeDesc = new ActionDescriptor()
-    typeDesc.putObject(s2t('type'), s2t('patternLayer'), scaleDesc)
-
-    nullDesc.putObject(s2t('using'), s2t('contentLayer'), typeDesc)
-    psApp.executeAction(s2t('make'), nullDesc, DialogModes.NO)
-}
-
-function movePattern(horizontalPx: number, verticalPx: number) {
-    var move = charToType("move");
-    var idnull = charToType("null");
-    
-    var selectedLayer = new ActionReference();
-    var idLyr = charToType("Lyr ");
-    var idOrdn = charToType("Ordn");
-    var idTrgt = charToType("Trgt");
-    selectedLayer.putEnumerated(idLyr, idOrdn, idTrgt);
-
-    var desc44 = new ActionDescriptor();
-    desc44.putReference(idnull, selectedLayer);
-
-    var movePixels = new ActionDescriptor();
-    var pixelUnit = charToType("#Pxl");
-    movePixels.putUnitDouble(charToType("Hrzn"), pixelUnit, horizontalPx);
-    movePixels.putUnitDouble(charToType("Vrtc"), pixelUnit, verticalPx);
-
-    var offset = charToType("Ofst");
-    desc44.putObject(charToType("T   "), offset, movePixels);
-    app.executeAction(move, desc44, DialogModes.NO);
 }
 
 function readFiles(folder: Folder) {
@@ -201,6 +145,12 @@ function getPatternSize(folderRef: Folder) {
             height: height,
         })
 
+        try {
+            makePatternFillLayer(fileRef.name, 100)
+        } catch (e) {
+            definePattern(fileRef.name)
+        }
+
         // Optional: Close the document without saving
         docRef.close(SaveOptions.DONOTSAVECHANGES)
     }
@@ -235,7 +185,7 @@ export function createMockup() {
 
     var mockupNameValue = mapLabelToValue(mockupType)
     var widthPx = getPatternSize(patternsFolder)
-    var scale = getScale(mockupNameValue, width, widthPx)
+    var scale = calcScale(mockupNameValue, width, widthPx)
 
     var subTypes = properties[mockupNameValue]
     for (var i = 0; i < subTypes.length; i++) {
