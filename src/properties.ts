@@ -80,30 +80,30 @@ export const properties: Properties = {
         },
     ],
     'pillow-velvet': [
-        // {
-        //     name: 'front',
-        //     path: 'Poszewki/VELVET/Velvet Cushion Cover Mockup by Creatsy (1).psd',
-        //     exportPrefix: 'poszewka-velvet-1-',
-        //     scaleMultiplier: 1,
-        // },
-        // {
-        //     name: 'side',
-        //     path: 'Poszewki/VELVET/Velvet Cushion Cover Mockup by Creatsy (2).psd',
-        //     exportPrefix: 'poszewka-velvet-2-',
-        //     scaleMultiplier: 1,
-        // },
-        // {
-        //     name: 'close',
-        //     path: 'Poszewki/VELVET/Velvet Cushion Cover Mockup by Creatsy (15).psd',
-        //     exportPrefix: 'poszewka-velvet-3-',
-        //     scaleMultiplier: 1,
-        // },
-        // {
-        //     name: 'flat',
-        //     path: 'Poszewki/VELVET/Velvet Cushion Cover Mockup by Creatsy (17).psd',
-        //     exportPrefix: 'poszewka-velvet-4-',
-        //     scaleMultiplier: 1,
-        // },
+        {
+            name: 'front',
+            path: 'Poszewki/VELVET/Velvet Cushion Cover Mockup by Creatsy (1).psd',
+            exportPrefix: 'poszewka-velvet-1-',
+            scaleMultiplier: 1,
+        },
+        {
+            name: 'side',
+            path: 'Poszewki/VELVET/Velvet Cushion Cover Mockup by Creatsy (2).psd',
+            exportPrefix: 'poszewka-velvet-2-',
+            scaleMultiplier: 1,
+        },
+        {
+            name: 'close',
+            path: 'Poszewki/VELVET/Velvet Cushion Cover Mockup by Creatsy (15).psd',
+            exportPrefix: 'poszewka-velvet-3-',
+            scaleMultiplier: 1,
+        },
+        {
+            name: 'flat',
+            path: 'Poszewki/VELVET/Velvet Cushion Cover Mockup by Creatsy (17).psd',
+            exportPrefix: 'poszewka-velvet-4-',
+            scaleMultiplier: 1,
+        },
         {
             name: 'flat-and-front',
             path: 'Poszewki/VELVET/Velvet Cushion Cover Mockup by Creatsy (19).psd',
