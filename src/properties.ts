@@ -336,9 +336,17 @@ export function getMockupLayer(mockupType: MockupType, subType: string, psDoc: D
             var cushionArmchairGroup = armchairGroup.layers[0] as LayerSet
             return [
                 { layerName: psDoc.layers[11], type: LayerType.ThreeDimensions },
-                { layerName: psDoc.layers[12], type: LayerType.ThreeDimensions },
+                {
+                    layerName: psDoc.layers[12],
+                    type: LayerType.ThreeDimensions,
+                    transform: { x: 500, y: 500 },
+                },
                 { layerName: cushionFloorGroup.layers[2], type: LayerType.SmartObject },
-                { layerName: cushionArmchairGroup.layers[2], type: LayerType.SmartObject },
+                {
+                    layerName: cushionArmchairGroup.layers[2],
+                    type: LayerType.SmartObject,
+                    transform: { x: 760, y: 760 },
+                },
             ]
         } else if (
             subType === 'eyelet-close' ||
