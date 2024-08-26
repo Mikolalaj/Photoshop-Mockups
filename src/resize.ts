@@ -1,8 +1,8 @@
-export function resizeAndSaveImage(filePath: string, sizes: Array<number>) {
-    var fileRef = new File(filePath)
+export function resizeAndSaveImage(filePath: string, rawFilePath: string, sizes: Array<number>) {
+    var fileRef = new File(rawFilePath)
 
     if (!fileRef.exists) {
-        alert('The file does not exist: ' + filePath)
+        alert('The file does not exist: ' + rawFilePath)
         return
     }
 

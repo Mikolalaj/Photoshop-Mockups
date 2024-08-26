@@ -5,8 +5,9 @@ const widthKey = app.stringIDToTypeID('width')
 const patternsPathKey = app.stringIDToTypeID('patternsPath')
 
 const settingsId = 'settings'
-// settings keys
+// persistent settings keys
 const outputPathKey = app.stringIDToTypeID('outputPath')
+const outputSizeKey = app.stringIDToTypeID('outputSizeKey')
 const mockupsPathKey = app.stringIDToTypeID('mockupsPathKey')
 
 type Settings = {
@@ -14,6 +15,7 @@ type Settings = {
     width: number
     patternsPath: string
     outputPath: string
+    outputSize: number
     mockupsPath: string
 }
 
@@ -29,6 +31,7 @@ function saveSettings(settings: Settings) {
     const persistentSettings = new ActionDescriptor()
 
     persistentSettings.putString(outputPathKey, settings.outputPath)
+    persistentSettings.putInteger(outputSizeKey, settings.outputSize)
     persistentSettings.putString(mockupsPathKey, settings.mockupsPath)
 
     app.putCustomOptions(settingsId, persistentSettings, true)
@@ -48,6 +51,7 @@ export function getSettings(): Settings {
         persistentSettings = app.getCustomOptions(settingsId)
     } catch (error) { }
     let outputPath: string
+    let outputSize: number
     let mockupsPath: string
 
     if (mockupSettings) {
@@ -57,10 +61,11 @@ export function getSettings(): Settings {
     }
     if (persistentSettings) {
         if (persistentSettings.hasKey(outputPathKey)) outputPath = persistentSettings.getString(outputPathKey)
+        if (persistentSettings.hasKey(outputSizeKey)) outputSize = persistentSettings.getInteger(outputSizeKey)
         if (persistentSettings.hasKey(mockupsPathKey)) mockupsPath = persistentSettings.getString(mockupsPathKey)
     }
 
-    return { mockupType, width, patternsPath, outputPath, mockupsPath }
+    return { mockupType, width, patternsPath, outputPath, outputSize, mockupsPath }
 }
 
 // Function to shorten the path and replace the middle with "..."
@@ -152,7 +157,7 @@ export function showDialog() {
 
     // mockup settings
 
-    var panel = group.add('panel', undefined, undefined, { name: 'panel' })
+    const panel = group.add('panel', undefined, undefined, { name: 'panel' })
     panel.text = 'Ustawienia'
     panel.orientation = 'column'
     panel.alignChildren = ['left', 'top']
@@ -160,13 +165,39 @@ export function showDialog() {
     panel.margins = 10
     panel.alignment = ['fill', 'top']
 
-    dialog['widthLabel'] = panel.add('statictext', undefined, undefined, { name: 'widthLabel' })
+    // inputs block
+
+    const inputsGroup = panel.add('group', undefined, { name: 'inputsGroup' })
+    inputsGroup.preferredSize.width = 150
+    inputsGroup.orientation = 'row'
+    inputsGroup.spacing = 10
+    inputsGroup.margins = 0
+    inputsGroup.alignment = ['fill', 'fill']
+
+    const widthGroup = inputsGroup.add('group', undefined, { name: 'widthGroup' })
+    widthGroup.size = [75, 50]
+    widthGroup.orientation = 'column'
+    widthGroup.alignment = ['fill', 'fill']
+
+    const outputSizeGroup = inputsGroup.add('group', undefined, { name: 'outputSizeGroup' })
+    outputSizeGroup.size = [75, 50]
+    outputSizeGroup.orientation = 'column'
+    outputSizeGroup.alignment = ['fill', 'fill']
+
+    dialog['widthLabel'] = widthGroup.add('statictext', undefined, undefined, { name: 'widthLabel' })
     dialog['widthLabel'].text = 'Szerokość wzoru (cm)'
     dialog['widthLabel'].alignment = ['fill', 'top']
 
-    dialog['width'] = panel.add('edittext', undefined, undefined, { name: 'width' })
+    dialog['width'] = widthGroup.add('edittext', undefined, undefined, { name: 'width' })
     dialog['width'].text = ''
     dialog['width'].alignment = ['fill', 'top']
+
+    dialog['outputSizeLabel'] = outputSizeGroup.add('statictext', undefined, undefined, { name: 'outputSizeLabel' })
+    dialog['outputSizeLabel'].text = 'Wymiar wyjściowego obrazu (px)'
+    dialog['outputSizeLabel'].alignment = ['fill', 'top']
+
+    dialog['outputSize'] = outputSizeGroup.add('edittext', undefined, undefined, { name: 'outputSize' })
+    dialog['outputSize'].alignment = ['fill', 'top']
 
     // select directory with patterns
     let patternsFolder: Folder
@@ -227,6 +258,12 @@ export function showDialog() {
             return
         }
 
+        let outputSize = dialog['outputSize'].text
+        if (!outputSize) {
+            alert('Podaj wymiar pliku wyjściowego (px)')
+            return
+        }
+
         let mockupName = dialog['mockup'].selection
         if (!mockupName) {
             alert("Wybierz rodzaj mockup'a")
@@ -238,6 +275,7 @@ export function showDialog() {
             width: width,
             patternsPath: patternsFolder.toString(),
             outputPath: outputFolder.toString(),
+            outputSize: outputSize,
             mockupsPath: mockupsFolder.toString(),
         })
 
@@ -255,6 +293,7 @@ export function showDialog() {
     mockupsPathText.text = shortenPath(settings.mockupsPath)
     outputFolder = new Folder(settings.outputPath)
     mockupsFolder = new Folder(settings.mockupsPath)
+    dialog['outputSize'].text = settings.outputSize || 1500
 
     dialog.center()
     return dialog.show()
