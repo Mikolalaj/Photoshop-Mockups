@@ -228,7 +228,14 @@ export function getMockupLayer(mockupType: MockupType, subType: string, psDoc: D
         } else if (subType === 'double') {
             return [
                 { layerName: psDoc.artLayers.getByName('Design (1)'), type: LayerType.SmartObject },
-                { layerName: psDoc.artLayers.getByName('Design (2)'), type: LayerType.SmartObject },
+                {
+                    layerName: psDoc.artLayers.getByName('Design (2)'),
+                    type: LayerType.SmartObject,
+                    transform: {
+                        x: 3008,
+                        y: 3008,
+                    },
+                },
             ]
         }
     } else if (mockupType === 'tablecloth') {
